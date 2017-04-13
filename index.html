@@ -1,4 +1,16 @@
 <!doctype html>
-           <link rel="stylesheet" href="/style.css" />
-           <script src="/elm.js"></script>
-           
+<html>
+  <head>
+    <title>Things</title>
+     <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/elm.js"></script>
+    <script>
+      var root = document.getElementById('root');
+      Elm.Main.embed(root);
+    </script>
+  </body>
+</html>
+
