@@ -287,3 +287,4 @@ emojis =
         |> Dict.insert "1f37b" ( "\xD83C\xDF7B", [ "beers" ] )
         |> Dict.insert "1f37c" ( "\xD83C\xDF7C", [ "baby_bottle" ] )
         |> Dict.insert "1f380" ( "\xD83C\xDF80", [ "ribbon" ] )
+        |> Dict.insert "1f381" ( "\xD83C\xDF81", [ "gift" ] )
