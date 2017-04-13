@@ -74,8 +74,14 @@ view model =
 
 viewEmojiList : String -> Html Msg
 viewEmojiList searchPrefix =
-    div [] <|
-        List.map viewEmoji (Emoji.toList (Emoji.search searchPrefix emojis))
+    let
+        filteredEmoji =
+            Emoji.emojis
+                |> Emoji.search searchPrefix
+                |> Emoji.toList
+    in
+        div [] <|
+            List.map viewEmoji filteredEmoji
 
 
 viewEmoji : ( String, Emoji ) -> Html Msg

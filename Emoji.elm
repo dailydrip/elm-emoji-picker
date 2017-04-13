@@ -16,9 +16,16 @@ toList =
     Dict.toList
 
 
+emojiContains : String -> String -> Emoji -> Bool
+emojiContains prefix key ( emoji, strings ) =
+    strings
+        |> List.any (String.contains prefix)
+
+
 search : String -> Emojis -> Emojis
 search prefix emojis =
-    Dict.filter (\_ ( _, strings ) -> List.any (\s -> String.contains prefix s) strings) emojis
+    emojis
+        |> Dict.filter (emojiContains prefix)
 
 
 emojis : Emojis
