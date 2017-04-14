@@ -2,15 +2,17 @@
 <html>
   <head>
     <title>Things</title>
-     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/style.css" />
     <script src="/elm.js"></script>
   </head>
   <body>
     <div id="root"></div>
-    <script>
+    <script type="text/javascript">
       var root = document.getElementById('root');
-      Elm.Main.embed(root);
+      var app = Elm.Main.embed(root);
+      app.ports.selectedEmoji.subscribe((name) => {
+        console.log(name);
+      })
     </script>
   </body>
 </html>
-

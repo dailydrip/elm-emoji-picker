@@ -5,16 +5,17 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Dict exposing (Dict)
 import Emoji exposing (Emoji, emojis)
+import Ports
 
 
 type alias Model =
     { searchString : String
-    , selectedEmoji : Maybe String
+    , selectedEmoji : Maybe Emoji
     }
 
 
 type Msg
-    = SelectEmoji String
+    = SelectEmoji Emoji
     | UpdatePrefix String
 
 
@@ -47,29 +48,45 @@ subscriptions model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        SelectEmoji selected ->
-            ( { model | selectedEmoji = Just selected }
-            , Cmd.none
-            )
+    let
+        nextModel =
+            case msg of
+                SelectEmoji selected ->
+                    { model | selectedEmoji = Just selected }
 
-        UpdatePrefix prefix ->
-            ( { model | searchString = prefix }, Cmd.none )
+                UpdatePrefix prefix ->
+                    { model | searchString = prefix }
+    in
+        case nextModel.selectedEmoji of
+            Nothing ->
+                nextModel ! []
+
+            Just ( _, name, _ ) ->
+                nextModel ! [ Ports.selectedEmoji name ]
 
 
 view : Model -> Html Msg
 view model =
-    div
-        []
-        [ input
-            [ type_ "text"
-            , onInput UpdatePrefix
-            , placeholder "Search for an emoji"
-            ]
+    let
+        selectedEmojiString =
+            case model.selectedEmoji of
+                Just ( emojiString, emojiName, commonNames ) ->
+                    emojiString
+
+                Nothing ->
+                    "No selection"
+    in
+        div
             []
-        , h2 [] [ text <| Maybe.withDefault "No selection" model.selectedEmoji ]
-        , viewEmojiList model.searchString
-        ]
+            [ input
+                [ type_ "text"
+                , onInput UpdatePrefix
+                , placeholder "Search for an emoji"
+                ]
+                []
+            , h2 [] [ text selectedEmojiString ]
+            , viewEmojiList model.searchString
+            ]
 
 
 viewEmojiList : String -> Html Msg
@@ -85,9 +102,9 @@ viewEmojiList searchPrefix =
 
 
 viewEmoji : ( String, Emoji ) -> Html Msg
-viewEmoji ( key, ( emojiString, names ) ) =
+viewEmoji ( key, ( emojiString, emojiName, commonNames ) as emoji ) =
     div
         [ class "emoji"
-        , onClick <| SelectEmoji emojiString
+        , onClick <| SelectEmoji emoji
         ]
         [ text emojiString ]
