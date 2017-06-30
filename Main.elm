@@ -1,11 +1,13 @@
 module Main exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
 import Dict exposing (Dict)
+import Element exposing (..)
+import Element.Attributes exposing (..)
+import Element.Events exposing (onClick, onInput)
 import Emoji exposing (Emoji, emojis)
+import Html exposing (Html)
 import Ports
+import Styles exposing (Styles(..))
 
 
 type alias Model =
@@ -57,12 +59,12 @@ update msg model =
                 UpdatePrefix prefix ->
                     { model | searchString = prefix }
     in
-        case nextModel.selectedEmoji of
-            Nothing ->
-                nextModel ! []
+    case nextModel.selectedEmoji of
+        Nothing ->
+            nextModel ! []
 
-            Just ( _, name, _ ) ->
-                nextModel ! [ Ports.selectedEmoji name ]
+        Just ( _, name, _ ) ->
+            nextModel ! [ Ports.selectedEmoji name ]
 
 
 view : Model -> Html Msg
@@ -76,20 +78,24 @@ view model =
                 Nothing ->
                     "No selection"
     in
-        div
+    Element.root Styles.stylesheet <|
+        column None
             []
-            [ input
-                [ type_ "text"
-                , onInput UpdatePrefix
-                , placeholder "Search for an emoji"
-                ]
-                []
-            , h2 [] [ text selectedEmojiString ]
-            , viewEmojiList model.searchString
+            [ el None [ center, width (px 400) ] <|
+                column None
+                    []
+                    [ inputText None
+                        [ onInput UpdatePrefix
+                        , placeholder "Search for an emoji"
+                        ]
+                        model.searchString
+                    , el SelectedEmoji [] <| text selectedEmojiString
+                    , viewEmojiList model.searchString
+                    ]
             ]
 
 
-viewEmojiList : String -> Html Msg
+viewEmojiList : String -> Element Styles variation Msg
 viewEmojiList searchPrefix =
     let
         filteredEmoji =
@@ -97,14 +103,17 @@ viewEmojiList searchPrefix =
                 |> Emoji.search searchPrefix
                 |> Emoji.toList
     in
-        div [] <|
-            List.map viewEmoji filteredEmoji
+    wrappedRow EmojiList [] <|
+        List.map viewEmoji filteredEmoji
 
 
-viewEmoji : ( String, Emoji ) -> Html Msg
+viewEmoji : ( String, Emoji ) -> Element Styles variation Msg
 viewEmoji ( key, ( emojiString, emojiName, commonNames ) as emoji ) =
-    div
-        [ class "emoji"
-        , onClick <| SelectEmoji emoji
+    el Emoji
+        [ onClick <| SelectEmoji emoji
+        , width (px 40)
+        , height (px 40)
         ]
-        [ text emojiString ]
+    <|
+        el None [ center, verticalCenter ] <|
+            text emojiString
