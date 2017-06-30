@@ -3,6 +3,8 @@ module Styles exposing (Styles(..), stylesheet)
 import Color exposing (rgba)
 import Style exposing (..)
 import Style.Color as Color
+import Style.Transition as Transition
+import Time
 
 
 {-| Here's where we define all of the named styles that exist in our app.
@@ -36,9 +38,16 @@ stylesheet =
             []
         , style Emoji
             [ Color.background colors.transparent
+            , Transition.transitions
+                [ { delay = 0
+                  , duration = Time.second * 0.5
+                  , easing = "ease-in-out"
+                  , props = [ "all" ]
+                  }
+                ]
+            , cursor "pointer"
             , hover
                 [ Color.background colors.lightGrey
                 ]
-            , cursor "pointer"
             ]
         ]
